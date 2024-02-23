@@ -17,28 +17,28 @@ pg.display.set_caption("Maze Game")
 
 # Maze layout using a 2D array
 maze = [
-    '|||||||||||||||||||||||||||',
-    '|............|............|',
-    '|.||||.|||||.|.|||||.||||.|',
-    '|.||||.|||||.|.|||||.||||.|',
-    '|.........................|',
-    '|.||||.||.|||||||.||.||||.|',
-    '|......||....|....||......|',
-    '|.||||.||||| | |||||.||||.|',
-    '|.||||.||         ||.||||.|',
-    '|.||||.||  |||||  ||.||||.|',
-    '      .    |EEE|    .      ',
-    '|.||||.||  |||||  ||.||||.|',
-    '|.||||.||         ||.||||.|',
-    '|.||||.||.|||||||.||.||||.|',
-    '|............|............|',
-    '|.||||.|||||.|.|||||.||||.|',
-    '|....|.......P.......|....|',
-    '|||..|.||.|||||||.||.|..|||',
-    '|......||....|....||......|',
-    '|.||||||||||.|.||||||||||.|',
-    '|.........................|',
-    '|||||||||||||||||||||||||||'
+      '|||||||||||||||||||||||||||',
+      '|............|............|',
+      '|.||||.|||||.|.|||||.||||.|',
+      '|.||||.|||||.|.|||||.||||.|',
+      '|.........................|',
+      '|.||||.||.|||||||.||.||||.|',
+      '|......||....|....||......|',
+      '|.||||.||||| | |||||.||||.|',
+      '|.||||.||         ||.||||.|',
+      '|.||||.||  |||||  ||.||||.|',
+      '      .    |EEE|    .      ',
+      '|.||||.||  |||||  ||.||||.|',
+      '|.||||.||         ||.||||.|',
+      '|.||||.||.|||||||.||.||||.|',
+      '|............|............|',
+      '|.||||.|||||.|.|||||.||||.|',
+      '|....|.......P.......|....|',
+      '|||..|.||.|||||||.||.|..|||',
+      '|......||....|....||......|',
+      '|.||||||||||.|.||||||||||.|',
+      '|.........................|',
+      '|||||||||||||||||||||||||||'
 ]
 
 # Maze cell size
@@ -48,25 +48,32 @@ cell_size = int(WIDTH / 27)
 pacman_size = cell_size / 2
 pacman_args = pg.Rect(cell_size, cell_size, pacman_size, pacman_size)
 pacman_pos = pg.Vector2(16, 13)
-pacman_speed = 5
+pacman_speed = 1
 
 def draw_maze(maze):
-    for y, row in enumerate(maze):
-        for x, cell in enumerate(row):
-            rect = pg.Rect(x * cell_size, y * cell_size, cell_size, cell_size)
-            if cell == '|':
-                pg.draw.rect(screen, WHITE, rect)
-            elif cell == '-':
-                pg.draw.rect(screen, BLACK, rect)
-            elif cell == '.':
-                dot_rect = pg.Rect(rect.centerx - 2, rect.centery - 2, 5, 5)
-                pg.draw.rect(screen, WHITE, dot_rect)
-            elif cell == 'P':
-                pacman_args.x = x * cell_size + pacman_size / 2
-                pacman_args.y = y * cell_size + pacman_size / 2
-                pacman_pos.x = x
-                pacman_pos.y = y
-                pg.draw.circle(screen, YELLOW, pacman_args.center, pacman_size)
+      for y, row in enumerate(maze):
+            for x, cell in enumerate(row):
+                  rect = pg.Rect(x * cell_size, y * cell_size, cell_size, cell_size)
+                  if cell == '|':
+                        pg.draw.rect(screen, WHITE, rect)
+                  elif cell == '-':
+                        pg.draw.rect(screen, BLACK, rect)
+                  elif cell == '.':
+                        dot_rect = pg.Rect(rect.centerx - 2, rect.centery - 2, 5, 5)
+                        pg.draw.rect(screen, WHITE, dot_rect)
+                  elif cell == 'P':
+                        pacman_args.x = x * cell_size + pacman_size / 2
+                        pacman_args.y = y * cell_size + pacman_size / 2
+                        # print('_______________________MAZE__________________________')
+                        # for i in maze:
+                        #       print(i)
+                        # print('_____________________________________________________')
+                        pacman_pos.x = y
+                        pacman_pos.y = x
+                        pg.draw.circle(screen, YELLOW, pacman_args.center, pacman_size)
+
+def draw_pacman():
+    pg.draw.circle(screen, YELLOW, pacman_args.center, pacman_size)
 
 # Game loop
 running = True
@@ -91,24 +98,23 @@ while running:
     elif keys[pg.K_UP]:
         pacman_direction.y = -1
 
-    # Check boundaries before updating Pac-Man position
-    new_x = int(pacman_pos.x + pacman_direction.x)
-    new_y = int(pacman_pos.y + pacman_direction.y)
-    if 0 <= new_x < len(maze[0]) and 0 <= new_y < len(maze):
-        # Change the position of 'P' to ' '
-        maze_row = list(maze[int(pacman_pos.y)])
-        maze_row[int(pacman_pos.x)] = ' '
-        maze[int(pacman_pos.y)] = ''.join(maze_row)
-        pacman_pos += pacman_direction
-        maze_row = list(maze[int(pacman_pos.y)])
-        maze_row[int(pacman_pos.x)] = 'P'
-        maze[int(pacman_pos.y)] = ''.join(maze_row)
+    # Change the position of 'P' to 'X'
+
+#     maze[int(pacman_pos.x)][int(pacman_pos.y)] = ' '
+    maze[int(pacman_pos.x)] = maze[int(pacman_pos.x)][:int(pacman_pos.y)] + ' ' + maze[int(pacman_pos.x)][int(pacman_pos.y) + 1:]
+    pacman_pos.x += pacman_direction.x
+    pacman_pos.y += pacman_direction.y
+    maze[int(pacman_pos.x)] = maze[int(pacman_pos.x)][:int(pacman_pos.y)] + 'P' + maze[int(pacman_pos.x)][int(pacman_pos.y) + 1:]
+#     maze[int(pacman_pos.x)][int(pacman_pos.y)] = 'P'
 
     # Fill the screen with a background color
     screen.fill(BLACK)
 
     # Draw the maze
     draw_maze(maze)
+
+    # Draw Pac-Man
+#     draw_pacman()
 
     # Update the display
     pg.display.flip()
